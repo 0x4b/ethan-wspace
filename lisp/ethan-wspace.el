@@ -553,38 +553,12 @@ With arg, turn highlighting on if arg is positive, off otherwise."
   (let ((indicator (car (nth 4 (car (cdr event))))))
     (ethan-wspace-type-activate-highlight (ethan-wspace-type-name-from-indicator indicator))))
 
-(defun ethan-wspace-type-get-mode-line-element (type-name)
-  (let* ((type (ethan-wspace-get-type type-name))
-         (letter (ethan-wspace-type-get-field type :letter))
-         (cap-letter (capitalize letter))
-         (clean-mode (ethan-wspace-type-clean-mode-symbol type-name))
-         (highlight  (ethan-wspace-type-get-field (ethan-wspace-get-type type-name) :highlight)))
-    (list
-     (list clean-mode
-           (list :propertize letter
-                       'help-echo (ethan-wspace-type-get-mode-line-clean-help type-name)
-                       'local-map '(keymap
-                                    (mode-line keymap
-                                               (down-mouse-1 . ethan-wspace-menu-activate-highlight)))
-                       'mouse-face 'mode-line-highlight))
-     (list highlight
-           (list :propertize cap-letter
-                       'help-echo (ethan-wspace-type-get-mode-line-highlight-help type-name)
-                       'local-map '(keymap
-                                    (mode-line keymap
-                                               (down-mouse-1 . ethan-wspace-menu-activate-clean)))
-                       'mouse-face 'mode-line-highlight)))))
-
 (defvar ethan-wspace-mode-line-element
-  (let ((mode-line '(" ew:")))
-    (mapc (lambda (type)
-              (setq mode-line
-                    (cons (ethan-wspace-type-get-mode-line-element type) mode-line)))
-            (ethan-wspace-all-error-types))
-    (list (reverse mode-line)))
-  "The mode-line element for ethan-wspace.
-
-Typically looks like: \"ew:tLNm\".")
+  (list :propertize " ew"
+        'help-echo "Help-string"
+        'local-map '(keymap
+                     (mode-line keymap (down-mouse-1 . ethan-wspace-menu)))
+        'mouse-face 'mode-line-highlight))
 (put 'ethan-wspace-mode-line-element 'risky-local-variable t)
 
 
@@ -745,6 +719,28 @@ This just activates each whitespace type in this buffer."
 
 (defun ethan-wspace-hack-local-variables-hook ()
         (ethan-wspace-update-buffer))
+
+(defun ethan-wspace-menu-for-type (menu-type)
+  (list (ethan-wspace-type-get-field (ethan-wspace-get-type menu-type) :description)
+        ["Clean" (ethan-wspace-type-activate-clean menu-type) t]
+        ["Highlight" (ethan-wspace-type-activate-highlight menu-type) t]))
+
+(defun ethan-wspace-menu ()
+  (interactive)
+  (popup-menu
+   (list "Ethan Whitespace"
+         (list "Tabs"
+          ["Clean" (ethan-wspace-type-activate-clean 'tabs) t]
+          ["Highlight" (ethan-wspace-type-activate-highlight 'tabs) t])
+         (list "EOL"
+          ["Clean" (ethan-wspace-type-activate-clean 'eol) t]
+          ["Highlight" (ethan-wspace-type-activate-highlight 'eol) t])
+         (list "No NL-EOF"
+          ["Clean" (ethan-wspace-type-activate-clean 'no-nl-eof) t]
+          ["Highlight" (ethan-wspace-type-activate-highlight 'no-nl-eof) t])
+         (list "Manu NL-EOF"
+          ["Clean" (ethan-wspace-type-activate-clean 'many-nls-eof) t]
+          ["Highlight" (ethan-wspace-type-activate-highlight 'namy-nls-eof) t]))))
 
 ;; Diff mode.
 ;;
