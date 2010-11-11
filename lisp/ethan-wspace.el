@@ -531,31 +531,8 @@ With arg, turn highlighting on if arg is positive, off otherwise."
 
 
 ;;; Mode-Line stuff
-(defun ethan-wspace-type-get-mode-line-clean-help (type-name)
-  "Generate a help-echo text for clean-mode letters for `type-name'."
-  (let* ((type (ethan-wspace-get-type type-name))
-         (friendly-name (ethan-wspace-type-get-field type :description)))
-    (format "Cleaning %s\nmouse-1: Switch to highlighting %s\nmouse-2: Show help for minor mode\nmouse-3: Toggle minor modes" friendly-name friendly-name)))
-
-(defun ethan-wspace-type-get-mode-line-highlight-help (type-name)
-  "Generate a help-echo text for clean-mode letters for `type-name'."
-  (let* ((type (ethan-wspace-get-type type-name))
-         (friendly-name (ethan-wspace-type-get-field type :description)))
-    (format "Highlighting %s\nmouse-1: Switch to cleaning %s\nmouse-2: Show help for minor mode\nmouse-3: Toggle minor modes" friendly-name friendly-name)))
-
-(defun ethan-wspace-menu-activate-clean (event)
-  (interactive "@e")
-  (let ((indicator (car (nth 4 (car (cdr event))))))
-    (ethan-wspace-type-activate-clean (ethan-wspace-type-name-from-indicator indicator))))
-
-(defun ethan-wspace-menu-activate-highlight (event)
-  (interactive "@e")
-  (let ((indicator (car (nth 4 (car (cdr event))))))
-    (ethan-wspace-type-activate-highlight (ethan-wspace-type-name-from-indicator indicator))))
-
 (defvar ethan-wspace-mode-line-element
   (list :propertize " ew"
-        'help-echo "Help-string"
         'local-map '(keymap
                      (mode-line keymap (down-mouse-1 . ethan-wspace-menu)))
         'mouse-face 'mode-line-highlight))
@@ -738,7 +715,7 @@ This just activates each whitespace type in this buffer."
          (list "No NL-EOF"
           ["Clean" (ethan-wspace-type-activate-clean 'no-nl-eof) t]
           ["Highlight" (ethan-wspace-type-activate-highlight 'no-nl-eof) t])
-         (list "Manu NL-EOF"
+         (list "Many NL-EOF"
           ["Clean" (ethan-wspace-type-activate-clean 'many-nls-eof) t]
           ["Highlight" (ethan-wspace-type-activate-highlight 'namy-nls-eof) t]))))
 
